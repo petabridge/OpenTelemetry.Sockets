@@ -40,26 +40,24 @@ jobs:
       run: dotnet pack /p:PackageVersion=${{ github.ref_name }} -c Release -o ./output
 
     - name: Azure Login
-      uses: azure/login@v2
+      uses: azure/login@6b2456866fc08b011acb422a92a4aa20e2c4de32
       with:
         client-id: ${{ secrets.AZURE_CLIENT_ID }}
         tenant-id: ${{ secrets.AZURE_TENANT_ID }}
         subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
     - name: Sign Packages
-      uses: azure/powershell@v2
-      with:
-        azPSVersion: 'latest' # Specify Az PowerShell module version
-        inlineScript: |
-          dotnet sign code azure-key-vault `
-            "**/*.nupkg" `
-            --base-directory "./output" `
-            --publisher-name "Petabridge" `
-            --description "Petabridge OpenTelemetry Sockets Instrumentation" `
-            --description-url "https://github.com/petabridge/OpenTelemetry.TcpSockets" `
-            --azure-key-vault-certificate "${{ secrets.CODE_SIGN_CERT_NAME }}" `
-            --azure-key-vault-url "${{ secrets.CODE_SIGN_KEY_VAULT }}" `
-            -v Information
+      shell: pwsh
+      run: |
+        dotnet sign code azure-key-vault `
+          "$env:GITHUB_WORKSPACE/output/**/*.nupkg" `
+          --base-directory "$env:GITHUB_WORKSPACE/output" `
+          --publisher-name "Petabridge" `
+          --description "Petabridge OpenTelemetry Sockets Instrumentation" `
+          --description-url "https://github.com/petabridge/OpenTelemetry.TcpSockets" `
+          --azure-key-vault-certificate "${{ secrets.CODE_SIGN_CERT_NAME }}" `
+          --azure-key-vault-url "${{ secrets.CODE_SIGN_KEY_VAULT }}" `
+          -v Information
     
     - name: Upload Artifacts
       uses: actions/upload-artifact@v4
