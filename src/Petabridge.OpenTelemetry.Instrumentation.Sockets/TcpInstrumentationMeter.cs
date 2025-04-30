@@ -4,6 +4,9 @@ using System.Diagnostics.Metrics;
 using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
+using System.Net.Sockets;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace OpenTelemetry.Instrumentation.Sockets;
 
@@ -26,9 +29,88 @@ internal static class TcpInstrumentationMeter
         Predicate<TcpConnectionInformation>? keepConnectionData = null,
         Predicate<IPEndPoint>? keepListenerData = null)
     {
-        var connectionsTracker = TrackActiveTcpConnections(ActiveTcpConnectionsName, "Active TCP Connections", keepData: keepConnectionData);
-        var tcpListenersTracker = TrackActiveTcpListeners(ActiveTcpListenersName, "Active TCP Listeners", keepData:keepListenerData);
+        var connectionsTracker = TrackActiveTcpConnections(ActiveTcpConnectionsName, "Active TCP Connections",
+            keepData: keepConnectionData);
+        var tcpListenersTracker =
+            TrackActiveTcpListeners(ActiveTcpListenersName, "Active TCP Listeners", keepData: keepListenerData);
         return (connectionsTracker, tcpListenersTracker);
+    }
+
+    private static string TcpMetricName(AddressFamily family, string metricName)
+    {
+        return family switch
+        {
+            AddressFamily.InterNetwork => $"tcp.stats.ipv4.{metricName}",
+            AddressFamily.InterNetworkV6 => $"tcp.stats.ipv6.{metricName}",
+            _ => metricName
+        };
+    }
+
+    public static Task TrackTcpIpStatistics(IpFamily family, CancellationToken cancellationToken = default)
+    {
+        return family switch
+        {
+            IpFamily.IPv6 => TrackTcpIpv6Statistics(cancellationToken),
+            IpFamily.IPv4 => TrackTcpIpv4Statistics(cancellationToken),
+            _ => throw new ArgumentOutOfRangeException(nameof(family), family, $"Invalid IP family: {family}")
+        };
+    }
+
+    private static async Task TrackTcpIpv4Statistics(CancellationToken cancellationToken = default)
+    {
+        var metrics = new Dictionary<string, Gauge<long>>();
+        while (!cancellationToken.IsCancellationRequested)
+        {
+            await Task.Delay(TimeSpan.FromSeconds(10), cancellationToken);
+            var stats = IPGlobalProperties.GetIPGlobalProperties().GetTcpIPv4Statistics();
+            RecordTcpStats(AddressFamily.InterNetwork, metrics, stats);
+        }
+    }
+
+    private static void RecordTcpStats(AddressFamily family, Dictionary<string, Gauge<long>> metrics,
+        TcpStatistics statistics)
+    {
+        SetMetric("connections_accepted", statistics.ConnectionsAccepted);
+        SetMetric("connections_initiated", statistics.ConnectionsInitiated);
+        SetMetric("connections_reset", statistics.ResetConnections);
+        SetMetric("connections_established", statistics.CurrentConnections);
+        SetMetric("connections_cumulative", statistics.CumulativeConnections);
+        SetMetric("maximum_connections", statistics.MaximumConnections);
+        SetMetric("errors_received", statistics.ErrorsReceived);
+        
+        SetMetric("segments_received", statistics.SegmentsReceived);
+        SetMetric("segments_sent", statistics.SegmentsSent);
+        SetMetric("segments_resent", statistics.SegmentsResent);
+        
+        SetMetric("failed_connection_attempts", statistics.FailedConnectionAttempts);
+        SetMetric("resets_sent", statistics.ResetsSent);
+        return;
+        
+        void SetMetric(string name, long value)
+        {
+            if (metrics.TryGetValue(name, out var g))
+            {
+                g.Record(value);
+            }
+            else
+            {
+                var metricName = TcpMetricName(family, name);
+                var gauge = Meter.CreateGauge<long>(metricName, metricName);
+                metrics[name] = gauge;
+                gauge.Record(value);
+            }
+        }
+    }
+
+    private static async Task TrackTcpIpv6Statistics(CancellationToken cancellationToken = default)
+    {
+        var metrics = new Dictionary<string, Gauge<long>>();
+        while (!cancellationToken.IsCancellationRequested)
+        {
+            await Task.Delay(TimeSpan.FromSeconds(10), cancellationToken);
+            var stats = IPGlobalProperties.GetIPGlobalProperties().GetTcpIPv6Statistics();
+            RecordTcpStats(AddressFamily.InterNetwork, metrics, stats);
+        }
     }
 
     public static ObservableGauge<int> TrackActiveTcpConnections(string metricName, string description,
@@ -73,7 +155,12 @@ internal static class TcpInstrumentationMeter
             () =>
             {
                 keepData ??= DefaultListeningEndpointKeepFn;
-                
+
+                /*
+                 * These are all local listener addresses - the cardinality is low,
+                 * so it shouldn't be a risk to add them all to the tags from a cost
+                 * perspective.
+                 */
                 IPGlobalProperties properties = IPGlobalProperties.GetIPGlobalProperties();
                 var endPoints = properties.GetActiveTcpListeners().Where(c => keepData(c));
                 return endPoints.Select(c =>
