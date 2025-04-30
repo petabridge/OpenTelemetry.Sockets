@@ -47,9 +47,9 @@ jobs:
         subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
     - name: Sign Packages
-      uses: azure/cli@v2
+      uses: azure/powershell@v2
       with:
-        azcliversion: latest
+        azPSVersion: 'latest' # Specify Az PowerShell module version
         inlineScript: |
           dotnet sign code azure-key-vault `
             "**/*.nupkg" `
