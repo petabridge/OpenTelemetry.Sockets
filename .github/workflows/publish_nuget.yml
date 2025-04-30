@@ -58,14 +58,18 @@ jobs:
           --azure-key-vault-certificate "${{ secrets.CODE_SIGN_CERT_NAME }}" `
           --azure-key-vault-url "${{ secrets.CODE_SIGN_KEY_VAULT }}" `
           -v Information
-    
+
+    - name: List files before artifact upload
+      shell: pwsh
+      run: ls $env:GITHUB_WORKSPACE
+
     - name: Upload Artifacts
       uses: actions/upload-artifact@v4
       with:
         name: signed-packages
         path: |
           ./output/*.nupkg
-          RELEASE_NOTES.md # Also upload release notes
+          ./RELEASE_NOTES.md # Also upload release notes
 
   push_nuget:
     name: Push NuGet and Create Release
@@ -82,7 +86,7 @@ jobs:
       run: ls -R ${{ github.workspace }}/artifacts
 
     - name: Push Packages to NuGet
-      run: dotnet nuget push "${{ github.workspace }}/artifacts/*.nupkg" -k ${{ secrets.OTEL_NUGET_KEY }} -s https://api.nuget.org/v3/index.json
+      run: dotnet nuget push "${{ github.workspace }}/artifacts/output/*.nupkg" -k ${{ secrets.OTEL_NUGET_KEY }} -s https://api.nuget.org/v3/index.json
 
     # Need checkout again to potentially access repo files not in artifact, though RELEASE_NOTES.md is included above
     # If RELEASE_NOTES.md is the ONLY thing needed, this checkout might be removable.
@@ -106,4 +110,4 @@ jobs:
       with:
         repo-token: ${{ github.token }}
         release-tag: ${{ github.ref_name }}
-        files: '${{ github.workspace }}/artifacts/*.nupkg' # Upload nupkgs from artifact
+        files: '${{ github.workspace }}/artifacts/output/*.nupkg' # Adjusted path
