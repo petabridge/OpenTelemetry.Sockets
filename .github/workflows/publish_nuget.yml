@@ -90,11 +90,6 @@ jobs:
     - name: Push Packages to NuGet
       run: dotnet nuget push "${{ github.workspace }}/artifacts/*.nupkg" -k ${{ secrets.OTEL_NUGET_KEY }} -s https://api.nuget.org/v3/index.json --skip-duplicate
 
-    # Need checkout again to potentially access repo files not in artifact, though RELEASE_NOTES.md is included above
-    # If RELEASE_NOTES.md is the ONLY thing needed, this checkout might be removable.
-    - name: "Checkout for Release Notes (if needed)"
-      uses: actions/checkout@v4.2.2
-
     - name: Create GitHub Release
       id: create_release
       uses: actions/create-release@v1
