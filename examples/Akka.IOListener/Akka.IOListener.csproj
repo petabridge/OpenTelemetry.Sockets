@@ -10,13 +10,13 @@
     <ItemGroup>
         <PackageReference Include="Akka.Hosting"/>
         <PackageReference Include="Microsoft.Extensions.Hosting"/>
-        <PackageReference Include="OpenTelemetry.Exporter.Console" />
-        <PackageReference Include="OpenTelemetry.Extensions.Hosting" />
-        <PackageReference Include="OpenTelemetry.Instrumentation.Runtime" />
+        <PackageReference Include="OpenTelemetry.Exporter.Console"/>
+        <PackageReference Include="OpenTelemetry.Extensions.Hosting"/>
+        <PackageReference Include="OpenTelemetry.Instrumentation.Runtime"/>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\src\Petabridge.OpenTelemetry.Instrumentation.Sockets\Petabridge.OpenTelemetry.Instrumentation.Sockets.csproj" />
+        <ProjectReference Include="..\..\src\Petabridge.OpenTelemetry.Instrumentation.Sockets\Petabridge.OpenTelemetry.Instrumentation.Sockets.csproj"/>
     </ItemGroup>
 
 </Project>

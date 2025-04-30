@@ -1,70 +1,107 @@
-# build-system-template
-Akka.NET project build system template that provides standardized build and CI/CD configuration for all Akka.NET projects.
+# Petabridge.OpenTelemetry.Instrumentation.Sockets
 
-## Build System Overview
-This repository contains our standardized build system setup that can be used across all Akka.NET projects. Here are the key components and practices we follow:
+[![Nuget version](https://img.shields.io/nuget/v/Petabridge.OpenTelemetry.Instrumentation.Sockets)](https://www.nuget.org/packages/Petabridge.OpenTelemetry.Instrumentation.Sockets/) [![Nuget downloads](https://img.shields.io/nuget/dt/Petabridge.OpenTelemetry.Instrumentation.Sockets)](https://www.nuget.org/packages/Petabridge.OpenTelemetry.Instrumentation.Sockets/)
 
-### CI/CD Configuration
-We primarily use GitHub Actions for our CI/CD pipelines, but also maintain Azure DevOps pipeline examples. You can find the configuration examples in:
-- `.github/workflows/` - GitHub Actions pipeline examples
-- `.azuredevops/` - Azure DevOps pipeline examples
+An [OpenTelemetry](https://opentelemetry.io/) instrumentation package for collecting detailed metrics about TCP socket
+activity on Windows and Linux systems. This was developed by [Petabridge](https://petabridge.com/) to support our
+development work on [Akka.NET](https://getakka.net/).
 
-### SDK Version Management
-We use `global.json` to pin the .NET SDK version for both CI/CD environments and local development. This ensures consistent builds across all environments and developers.
+## What It Does
 
-### .NET Tools
-We use local .NET tools to enhance our build and documentation process. The tools are configured in `.config/dotnet-tools.json` and include:
+This package provides instrumentation for monitoring TCP connections and statistics directly from the operating system.
+It allows you to gather metrics such as:
 
-- [Incrementalist](https://github.com/petabridge/Incrementalist) (v1.0.0-beta4) - Used for determining which projects need to be rebuilt based on Git changes
-- [DocFx](https://dotnet.github.io/docfx/) (v2.78.3) - Used for generating documentation
+* Number of active TCP connections
+* Number of established TCP connections
+* Number of TCP connections in specific states (e.g., `TIME_WAIT`, `CLOSE_WAIT`)
+* TCP errors and resets
+* Segments sent and received
 
-To restore these tools in your local environment, run:
-```powershell
-dotnet tool restore
-```
+This information is crucial for understanding network performance, diagnosing connectivity issues, and monitoring the
+health of network-intensive applications.
 
-This command is automatically executed in our CI/CD pipelines (both GitHub Actions and Azure DevOps) to ensure tools are available during builds.
+**Supported Platforms:**
 
-### Centralized Package and Build Management
-We utilize two key MSBuild files for centralized configuration:
+* Windows (via `iphlpapi.dll`)
+* Linux (via `/proc/net/tcp` and `/proc/net/tcp6`)
 
-1. `Directory.Packages.props` - Implements [Central Package Version Management](https://learn.microsoft.com/nuget/consume-packages/Central-Package-Management) for consistent NuGet package versions across all projects in the solution.
+## :warning: Important Caveat: System-Wide Data Collection
 
-2. `Directory.Build.props` - Defines common build properties, including:
-   - Copyright and author information
-   - Source linking configuration
-   - NuGet package metadata
-   - Common compiler settings
-   - Target framework definitions
+Please be aware that this instrumentation gathers TCP data **for the entire operating system environment**, not just for
+the specific process where the instrumentation is running. The underlying APIs (`iphlpapi.dll` on Windows,
+`/proc/net/tcp*` on Linux) provide a system-wide view of TCP activity.
 
-### Code Coverage Configuration
-The `coverlet.runsettings` file configures code coverage collection using Coverlet, with settings for:
-- Multiple coverage report formats (JSON, Cobertura, LCOV, TeamCity, OpenCover)
-- Test assembly exclusions
-- Source linking integration
-- Performance optimizations
+If you need process-specific network metrics, you will need to use different instrumentation methods or correlate this
+data with process-specific identifiers if possible.
 
-### Release Management
-Our release process is streamlined through:
-- `RELEASE_NOTES.md` - Contains version history and release notes
-- `build.ps1` - PowerShell script that processes release notes and updates version information
-- Supporting scripts in `/scripts`:
-  - `bumpVersion.ps1` - Updates version numbers
-  - `getReleaseNotes.ps1` - Parses release notes
+## Installation
 
-The build system primarily relies on standard `dotnet` CLI commands, with the PowerShell scripts mainly handling release note processing and version management.
-
-### Solution Format
-We prefer the new `.slnx` XML-based solution format over the traditional `.sln` format. This requires .NET 9 SDK or later. The new format is more concise and easier to work with. You can migrate existing solutions using:
+You can install this package via the .NET CLI:
 
 ```powershell
-dotnet sln migrate
+dotnet add package Petabridge.OpenTelemetry.Instrumentation.Sockets
 ```
 
-For more information about the new `.slnx` format, see the [official announcement](https://devblogs.microsoft.com/dotnet/introducing-slnx-support-dotnet-cli/).
+Or via the NuGet Package Manager console:
 
-## Getting Started
-1. Ensure you have the correct .NET SDK version installed (check `global.json`)
-2. Clone this repository
-3. Run `dotnet build` to verify the build system
-4. Customize the configuration files for your specific project needs
+```powershell
+Install-Package Petabridge.OpenTelemetry.Instrumentation.Sockets
+```
+
+## Usage
+
+To enable TCP socket instrumentation, add it to your OpenTelemetry `MeterProvider` configuration.
+
+**Basic Configuration:**
+
+This example shows how to add the instrumentation with default settings:
+
+```csharp
+using OpenTelemetry.Metrics;
+using Petabridge.OpenTelemetry.Instrumentation.Sockets; // <-- Add this using statement
+
+// ... inside your service configuration (e.g., Program.cs or Startup.cs)
+services.AddOpenTelemetry()
+    .WithMetrics(builder =>
+    {
+        builder
+            // Add other meters as needed
+            .AddConsoleExporter() // Example exporter
+            .AddSocketInstrumentation(); // <-- Add this line
+    });
+```
+
+**Custom Configuration:**
+
+You can customize the instrumentation behavior, such as the collection interval and which specific metrics to enable.
+
+```csharp
+using System;
+using OpenTelemetry.Metrics;
+using Petabridge.OpenTelemetry.Instrumentation.Sockets; // <-- Add this using statement
+
+// ... inside your service configuration
+services.AddOpenTelemetry()
+    .WithMetrics(builder =>
+    {
+        builder
+            // Add other meters as needed
+            .AddConsoleExporter() // Example exporter
+            .AddSocketInstrumentation(configurator => // <-- Configure options
+            {
+                // Set how often metrics are collected (default is 15 seconds)
+                configurator.CollectionInterval = TimeSpan.FromSeconds(10);
+
+                // Explicitly enable TCP connection state metrics (enabled by default)
+                configurator.AddTcpConnectionInstrumentation();
+
+                // Explicitly enable TCP statistics metrics (enabled by default)
+                configurator.AddTcpStatisticsInstrumentation();
+            });
+    });
+```
+
+See the [OpenTelemetry .NET documentation](https://opentelemetry.io/docs/instrumentation/net/getting-started/) for more
+details on configuring exporters and the SDK.
+
+Copyright 2015-2025 [Petabridge](https://petabridge.com/), LLC.

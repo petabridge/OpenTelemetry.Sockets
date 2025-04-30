@@ -1,4 +1,10 @@
-﻿using Akka.Hosting;
+﻿// -----------------------------------------------------------------------
+// <copyright file="Program.cs" company="Petabridge, LLC">
+//      Copyright (C) 2025 - 2025 Petabridge, LLC <https://petabridge.com>
+// </copyright>
+// -----------------------------------------------------------------------
+
+using Akka.Hosting;
 using Akka.IOListener;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -6,7 +12,6 @@ using Microsoft.Extensions.Logging;
 using OpenTelemetry.Instrumentation.Sockets;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
-using LogLevel = Akka.Event.LogLevel;
 
 var hostBuilder = new HostBuilder();
 
@@ -16,18 +21,15 @@ hostBuilder.ConfigureServices((context, services) =>
     {
         builder.ClearProviders();
         builder.AddConsole();
-        
+
         var resourceBuilder = ResourceBuilder.CreateDefault();
         resourceBuilder
             .AddEnvironmentVariableDetector()
             .AddTelemetrySdk();
 
-        builder.AddOpenTelemetry(options =>
-        {
-            options.SetResourceBuilder(resourceBuilder);
-        }); 
+        builder.AddOpenTelemetry(options => { options.SetResourceBuilder(resourceBuilder); });
     });
-    
+
     services.AddAkka("MyActorSystem", (builder, sp) =>
     {
         builder
