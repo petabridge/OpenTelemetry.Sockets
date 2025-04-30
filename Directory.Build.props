@@ -1,44 +1,45 @@
 <Project>
-  <PropertyGroup>
-    <Copyright>Copyright © 2015-$([System.DateTime]::Now.Year) Petabridge</Copyright>
-    <Authors>Petabridge</Authors>
-    <NoWarn>$(NoWarn);CS1591</NoWarn>
-    <LangVersion>latest</LangVersion>
-    <Nullable>enable</Nullable>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <VersionPrefix>1.0.0</VersionPrefix>
-    <PackageReleaseNotes>Example release notes</PackageReleaseNotes>
-  </PropertyGroup>
-  <PropertyGroup>
-    <!-- Visual Studio C# settings -->
-    <NetStandardLibVersion>netstandard2.0</NetStandardLibVersion>
-    <NetLibVersion>net8.0</NetLibVersion>
-    <NetCoreTestVersion>net9.0</NetCoreTestVersion>
-  </PropertyGroup>
-  <!-- GitHub SourceLink -->
-  <ItemGroup>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All" />
-  </ItemGroup>
-  <!-- NuGet package properties -->
+    <PropertyGroup>
+        <Copyright>Copyright © 2015-$([System.DateTime]::Now.Year) Petabridge</Copyright>
+        <Authors>Petabridge</Authors>
+        <NoWarn>$(NoWarn);CS1591</NoWarn>
+        <LangVersion>latest</LangVersion>
+        <Nullable>enable</Nullable>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+        <VersionPrefix>1.0.0</VersionPrefix>
+        <PackageReleaseNotes>Example release notes</PackageReleaseNotes>
+    </PropertyGroup>
+    <PropertyGroup>
+        <!-- Visual Studio C# settings -->
+        <NetStandardLibVersion>netstandard2.0</NetStandardLibVersion>
+        <NetLibVersion>net8.0</NetLibVersion>
+        <NetCoreTestVersion>net9.0</NetCoreTestVersion>
+    </PropertyGroup>
+    <!-- GitHub SourceLink -->
     <ItemGroup>
-    <None Include="$(MSBuildThisFileDirectory)\petabridge_logo_square.png" Pack="true" PackagePath="\" />
-    <None Include="$(MSBuildThisFileDirectory)\README.md" Pack="true" PackagePath="\" />
-  </ItemGroup>
-  <!-- NuGet .nupkg options -->
-  <PropertyGroup>
-    <PackageReleaseNotes>1.5.25 June 17 2024
+        <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All"/>
+    </ItemGroup>
+    <!-- NuGet package properties -->
+    <ItemGroup>
+        <None Include="$(MSBuildThisFileDirectory)\petabridge_logo_square.png" Pack="true" PackagePath="\"/>
+        <None Include="$(MSBuildThisFileDirectory)\README.md" Pack="true" PackagePath="\"/>
+    </ItemGroup>
+    <!-- NuGet .nupkg options -->
+    <PropertyGroup>
+        <PackageReleaseNotes>1.5.25 June 17 2024
 
-* [Updated Akka.NET to 1.5.25](https://github.com/akkadotnet/akka.net/releases/tag/1.5.25)</PackageReleaseNotes>
-    <PackageTags>otel, opentelemetry, tcp, sockets, tcp metrics, socket metrics</PackageTags>
-    <PackageProjectUrl>https://github.com/petabridge/OpenTelemetry.TcpSockets</PackageProjectUrl>
-    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-    <PackageIcon>petabridge_logo_square.png</PackageIcon>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
-    <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    <!-- Optional: Embed source files that are not tracked by the source control manager in the PDB -->
-    <EmbedUntrackedSources>true</EmbedUntrackedSources>
-    <!-- Optional: Build symbol package (.snupkg) to distribute the PDB containing Source Link -->
-    <IncludeSymbols>true</IncludeSymbols>
-    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-  </PropertyGroup>
+            * [Updated Akka.NET to 1.5.25](https://github.com/akkadotnet/akka.net/releases/tag/1.5.25)
+        </PackageReleaseNotes>
+        <PackageTags>otel, opentelemetry, tcp, sockets, tcp metrics, socket metrics</PackageTags>
+        <PackageProjectUrl>https://github.com/petabridge/OpenTelemetry.TcpSockets</PackageProjectUrl>
+        <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+        <PackageIcon>petabridge_logo_square.png</PackageIcon>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <!-- Optional: Embed source files that are not tracked by the source control manager in the PDB -->
+        <EmbedUntrackedSources>true</EmbedUntrackedSources>
+        <!-- Optional: Build symbol package (.snupkg) to distribute the PDB containing Source Link -->
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    </PropertyGroup>
 </Project>

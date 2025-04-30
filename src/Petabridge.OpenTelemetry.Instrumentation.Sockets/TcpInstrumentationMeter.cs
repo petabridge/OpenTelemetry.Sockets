@@ -1,4 +1,10 @@
-﻿using System;
+﻿// -----------------------------------------------------------------------
+// <copyright file="TcpInstrumentationMeter.cs" company="Petabridge, LLC">
+//      Copyright (C) 2025 - 2025 Petabridge, LLC <https://petabridge.com>
+// </copyright>
+// -----------------------------------------------------------------------
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.Metrics;
 using System.Linq;
@@ -12,7 +18,7 @@ using static OpenTelemetry.Instrumentation.Sockets.SocketInstrumentationExtensio
 namespace OpenTelemetry.Instrumentation.Sockets;
 
 /// <summary>
-/// INTERNAL API - private implementation details for tracking TCP connections and listeners
+///     INTERNAL API - private implementation details for tracking TCP connections and listeners
 /// </summary>
 internal static class TcpInstrumentationMeter
 {
@@ -45,13 +51,14 @@ internal static class TcpInstrumentationMeter
         };
     }
 
-    public static Task TrackTcpIpStatistics(IpFamily family, TimeSpan collectionInterval, CancellationToken cancellationToken = default)
+    public static Task TrackTcpIpStatistics(IpFamily family, TimeSpan collectionInterval,
+        CancellationToken cancellationToken = default)
     {
         // check if collectionInterval is zero or negative
         if (collectionInterval <= TimeSpan.Zero)
             throw new ArgumentOutOfRangeException(nameof(collectionInterval), collectionInterval,
                 "Collection interval must be greater than zero.");
-        
+
         return family switch
         {
             IpFamily.IPv6 => TrackTcpIpv6Statistics(collectionInterval, cancellationToken),
@@ -60,7 +67,8 @@ internal static class TcpInstrumentationMeter
         };
     }
 
-    private static async Task TrackTcpIpv4Statistics(TimeSpan collectionInterval, CancellationToken cancellationToken = default)
+    private static async Task TrackTcpIpv4Statistics(TimeSpan collectionInterval,
+        CancellationToken cancellationToken = default)
     {
         var metrics = new Dictionary<string, Gauge<long>>();
         while (!cancellationToken.IsCancellationRequested)
@@ -81,15 +89,15 @@ internal static class TcpInstrumentationMeter
         SetMetric("connections_cumulative", statistics.CumulativeConnections);
         SetMetric("maximum_connections", statistics.MaximumConnections);
         SetMetric("errors_received", statistics.ErrorsReceived);
-        
+
         SetMetric("segments_received", statistics.SegmentsReceived);
         SetMetric("segments_sent", statistics.SegmentsSent);
         SetMetric("segments_resent", statistics.SegmentsResent);
-        
+
         SetMetric("failed_connection_attempts", statistics.FailedConnectionAttempts);
         SetMetric("resets_sent", statistics.ResetsSent);
         return;
-        
+
         void SetMetric(string name, long value)
         {
             if (metrics.TryGetValue(name, out var g))
@@ -106,7 +114,8 @@ internal static class TcpInstrumentationMeter
         }
     }
 
-    private static async Task TrackTcpIpv6Statistics(TimeSpan collectionInterval, CancellationToken cancellationToken = default)
+    private static async Task TrackTcpIpv6Statistics(TimeSpan collectionInterval,
+        CancellationToken cancellationToken = default)
     {
         var metrics = new Dictionary<string, Gauge<long>>();
         while (!cancellationToken.IsCancellationRequested)
@@ -120,13 +129,14 @@ internal static class TcpInstrumentationMeter
 
     public static ObservableGauge<int> TrackActiveTcpConnections(string metricName, string description,
         string units = TcpConnectionsUnit, Predicate<TcpConnectionInformation>? keepData = null)
-        => SocketMeter.CreateObservableGauge<int>(metricName,
+    {
+        return SocketMeter.CreateObservableGauge(metricName,
             () =>
             {
                 keepData ??= DefaultTcpConnectionKeepFn;
                 var rawMeasurements = new Dictionary<TcpState, int>();
                 var realMeasurements = Array.Empty<Measurement<int>>();
-                IPGlobalProperties properties = IPGlobalProperties.GetIPGlobalProperties();
+                var properties = IPGlobalProperties.GetIPGlobalProperties();
                 TcpConnectionInformation[] connections = properties.GetActiveTcpConnections();
 
                 // for each connection, if the connection is to be kept, add it to the measurements
@@ -153,10 +163,12 @@ internal static class TcpInstrumentationMeter
 
                 return realMeasurements;
             }, units, description);
+    }
 
     public static ObservableGauge<int> TrackActiveTcpListeners(string metricName, string description,
         string units = TcpListenersUnit, Predicate<IPEndPoint>? keepData = null)
-        => SocketMeter.CreateObservableGauge<int>(metricName,
+    {
+        return SocketMeter.CreateObservableGauge(metricName,
             () =>
             {
                 keepData ??= DefaultListeningEndpointKeepFn;
@@ -166,7 +178,7 @@ internal static class TcpInstrumentationMeter
                  * so it shouldn't be a risk to add them all to the tags from a cost
                  * perspective.
                  */
-                IPGlobalProperties properties = IPGlobalProperties.GetIPGlobalProperties();
+                var properties = IPGlobalProperties.GetIPGlobalProperties();
                 var endPoints = properties.GetActiveTcpListeners().Where(c => keepData(c));
                 return endPoints.Select(c =>
                 {
@@ -179,4 +191,5 @@ internal static class TcpInstrumentationMeter
                     return new Measurement<int>(1, tags);
                 });
             }, units, description);
+    }
 }

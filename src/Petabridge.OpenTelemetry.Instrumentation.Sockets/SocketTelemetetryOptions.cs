@@ -1,27 +1,33 @@
-﻿using System;
+﻿// -----------------------------------------------------------------------
+// <copyright file="SocketTelemetetryOptions.cs" company="Petabridge, LLC">
+//      Copyright (C) 2025 - 2025 Petabridge, LLC <https://petabridge.com>
+// </copyright>
+// -----------------------------------------------------------------------
+
+using System;
 using OpenTelemetry.Metrics;
 
 namespace OpenTelemetry.Instrumentation.Sockets;
 
 /// <summary>
-/// Configures the OpenTelemetry instrumentation for sockets.
+///     Configures the OpenTelemetry instrumentation for sockets.
 /// </summary>
 public interface ISocketTelemetryConfigurator
 {
     /// <summary>
-    /// How often to collect telemetry data from the socket instrumentation on instruments
-    /// that support it.
+    ///     How often to collect telemetry data from the socket instrumentation on instruments
+    ///     that support it.
     /// </summary>
     public TimeSpan CollectionInterval { get; set; }
 }
 
 /// <summary>
-/// INTERNAL API - private implementation details for configuring OpenTelemetry instrumentation for sockets.
+///     INTERNAL API - private implementation details for configuring OpenTelemetry instrumentation for sockets.
 /// </summary>
 internal sealed class DefaultSocketTelemetryConfigurator : ISocketTelemetryConfigurator
 {
     public static readonly TimeSpan DefaultCollectionInterval = TimeSpan.FromSeconds(10);
-    
+
     public DefaultSocketTelemetryConfigurator(MeterProviderBuilder builder)
     {
         builder.AddMeter(SocketInstrumentationExtensions.MeterName);
