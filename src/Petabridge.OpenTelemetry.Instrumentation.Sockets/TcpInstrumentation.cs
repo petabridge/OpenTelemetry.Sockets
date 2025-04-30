@@ -20,11 +20,9 @@ public static class TcpInstrumentation
     /// This method will automatically start tracking TCP connection and listener activity in the background - captures
     /// everything happening in the current environment.
     /// </remarks>
-    public static MeterProviderBuilder AddTcpConnectionInstrumentation(this MeterProviderBuilder builder,
+    public static ISocketTelemetryConfigurator AddTcpConnectionInstrumentation(this ISocketTelemetryConfigurator builder,
         IPEndPoint[]? onlyCareAboutTheseEndpoints = null)
     {
-        builder.AddMeter(MeterName);
-
         // these will just run in the background
         var (connectionsTracker, tcpListenersTracker) = TrackTcpActivity(KeepConnectionData, KeepListenerData);
 
@@ -54,4 +52,26 @@ public static class TcpInstrumentation
             return false;
         }
     }
+    
+    /// <summary>
+    /// Adds TCP statistics instrumentation to the telemetry for all supported <see cref="IpFamily"/>.
+    /// </summary>
+    /// <param name="configurator"></param>
+    /// <param name="specificFamily">Optional. When set, we ONLY track telemetry for this family.</param>
+    public static ISocketTelemetryConfigurator AddTcpStatisticsInstrumentation(this ISocketTelemetryConfigurator configurator, IpFamily? specificFamily = null)
+    {
+        if (specificFamily is null)
+        {
+            _ = TrackTcpIpStatistics(IpFamily.IPv4, configurator.CollectionInterval);
+            _ = TrackTcpIpStatistics(IpFamily.IPv6, configurator.CollectionInterval);
+        }
+        else
+        {
+            _ = TrackTcpIpStatistics(specificFamily.Value, configurator.CollectionInterval);
+        }
+        
+        return configurator;
+    }
+    
+    
 }

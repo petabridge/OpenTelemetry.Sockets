@@ -10,6 +10,7 @@
     <Project Path="examples\Akka.IOListener\Akka.IOListener.csproj" Type="Classic C#" />
   </Folder>
   <Folder Name="/src/">
+    <Project Path="src\Petabridge.OpenTelemetry.Instrumentation.Sockets.Tests\Petabridge.OpenTelemetry.Instrumentation.Sockets.Tests.csproj" Type="Classic C#" />
     <Project Path="src\Petabridge.OpenTelemetry.Instrumentation.Sockets\Petabridge.OpenTelemetry.Instrumentation.Sockets.csproj" Type="Classic C#" />
   </Folder>
 </Solution>

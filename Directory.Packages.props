@@ -3,10 +3,9 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
   <ItemGroup>
-    <PackageVersion Include="Akka.Hosting" Version="1.5.38"/>
-    <PackageVersion Include="Microsoft.Extensions.Hosting" Version="8.0.0"/>
+    <PackageVersion Include="Akka.Hosting" Version="1.5.38" />
+    <PackageVersion Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
   </ItemGroup>
-
   <!-- dependencies -->
   <ItemGroup>
     <PackageVersion Include="OpenTelemetry.Api.ProviderBuilderExtensions" Version="1.12.0" />
@@ -16,6 +15,13 @@
     <PackageVersion Include="Polyfill" Version="7.27.0" />
   </ItemGroup>
   <!-- Test dependencies -->
+  <ItemGroup>
+    <PackageVersion Include="coverlet.collector" Version="6.0.0" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
+    <PackageVersion Include="xunit" Version="2.8.1" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="3.0.0" />
+    <PackageVersion Include="Akka.Hosting.TestKit" Version="1.5.38" />
+  </ItemGroup>
   <!-- SourceLink support for all Akka.NET projects -->
   <ItemGroup>
     <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="8.0.0" />
