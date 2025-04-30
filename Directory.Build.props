@@ -5,6 +5,7 @@
     <NoWarn>$(NoWarn);CS1591</NoWarn>
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <VersionPrefix>1.0.0-beta1</VersionPrefix>
     <PackageReleaseNotes>- Initial release of Petabridge.OpenTelemetry.Instrumentation.Sockets
