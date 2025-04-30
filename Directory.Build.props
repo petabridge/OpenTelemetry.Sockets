@@ -1,7 +1,7 @@
 <Project>
   <PropertyGroup>
-    <Copyright>Copyright © 2015-$([System.DateTime]::Now.Year) Akka.NET Team</Copyright>
-    <Authors>Akka.NET Team</Authors>
+    <Copyright>Copyright © 2015-$([System.DateTime]::Now.Year) Petabridge</Copyright>
+    <Authors>Petabridge</Authors>
     <Tags>akka, akka.streams, kafka, akkadotnet, akka streams, akka.streams.kafka</Tags>
     <NoWarn>$(NoWarn);CS1591</NoWarn>
     <LangVersion>latest</LangVersion>
@@ -13,7 +13,7 @@
   <PropertyGroup>
     <!-- Visual Studio C# settings -->
     <NetStandardLibVersion>netstandard2.0</NetStandardLibVersion>
-    <NetLibVersion>net6.0</NetLibVersion>
+    <NetLibVersion>net8.0</NetLibVersion>
     <NetCoreTestVersion>net9.0</NetCoreTestVersion>
   </PropertyGroup>
   <ItemGroup>
