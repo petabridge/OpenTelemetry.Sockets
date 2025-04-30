@@ -6,6 +6,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.Metrics;
 using System.Linq;
 using System.Net;
@@ -40,48 +41,31 @@ internal static class TcpInstrumentationMeter
             TrackActiveTcpListeners(ActiveTcpListenersName, "Active TCP Listeners", keepData: keepListenerData);
         return (connectionsTracker, tcpListenersTracker);
     }
-
-    private static string TcpMetricName(AddressFamily family, string metricName)
+    
+    public static ObservableGauge<long> TrackTcpIpStatistics(IpFamily family)
     {
         return family switch
         {
-            AddressFamily.InterNetwork => $"tcp.stats.ipv4.{metricName}",
-            AddressFamily.InterNetworkV6 => $"tcp.stats.ipv6.{metricName}",
-            _ => metricName
-        };
-    }
-
-    public static Task TrackTcpIpStatistics(IpFamily family, TimeSpan collectionInterval,
-        CancellationToken cancellationToken = default)
-    {
-        // check if collectionInterval is zero or negative
-        if (collectionInterval <= TimeSpan.Zero)
-            throw new ArgumentOutOfRangeException(nameof(collectionInterval), collectionInterval,
-                "Collection interval must be greater than zero.");
-
-        return family switch
-        {
-            IpFamily.IPv6 => TrackTcpIpv6Statistics(collectionInterval, cancellationToken),
-            IpFamily.IPv4 => TrackTcpIpv4Statistics(collectionInterval, cancellationToken),
+            IpFamily.IPv6 => TrackTcpIpv6Statistics(),
+            IpFamily.IPv4 => TrackTcpIpv4Statistics(),
             _ => throw new ArgumentOutOfRangeException(nameof(family), family, $"Invalid IP family: {family}")
         };
     }
 
-    private static async Task TrackTcpIpv4Statistics(TimeSpan collectionInterval,
-        CancellationToken cancellationToken = default)
+    private static ObservableGauge<long> TrackTcpIpv4Statistics()
     {
-        var metrics = new Dictionary<string, Gauge<long>>();
-        while (!cancellationToken.IsCancellationRequested)
-        {
-            await Task.Delay(collectionInterval, cancellationToken);
-            var stats = IPGlobalProperties.GetIPGlobalProperties().GetTcpIPv4Statistics();
-            RecordTcpStats(AddressFamily.InterNetwork, metrics, stats);
-        }
+        return SocketMeter.CreateObservableGauge("tcp.stats.ipv4",
+            () =>
+            {
+                var stats = IPGlobalProperties.GetIPGlobalProperties().GetTcpIPv4Statistics();
+                return RecordTcpStats(AddressFamily.InterNetwork, stats);
+            }, "observed", "TCP IPv4 statistics");
     }
 
-    private static void RecordTcpStats(AddressFamily family, Dictionary<string, Gauge<long>> metrics,
+    private static IEnumerable<Measurement<long>> RecordTcpStats(AddressFamily family, 
         TcpStatistics statistics)
     {
+        var measures = new List<Measurement<long>>();
         SetMetric("connections_accepted", statistics.ConnectionsAccepted);
         SetMetric("connections_initiated", statistics.ConnectionsInitiated);
         SetMetric("connections_reset", statistics.ResetConnections);
@@ -89,42 +73,28 @@ internal static class TcpInstrumentationMeter
         SetMetric("connections_cumulative", statistics.CumulativeConnections);
         SetMetric("maximum_connections", statistics.MaximumConnections);
         SetMetric("errors_received", statistics.ErrorsReceived);
-
         SetMetric("segments_received", statistics.SegmentsReceived);
         SetMetric("segments_sent", statistics.SegmentsSent);
         SetMetric("segments_resent", statistics.SegmentsResent);
-
         SetMetric("failed_connection_attempts", statistics.FailedConnectionAttempts);
         SetMetric("resets_sent", statistics.ResetsSent);
-        return;
+        return measures;
 
         void SetMetric(string name, long value)
         {
-            if (metrics.TryGetValue(name, out var g))
-            {
-                g.Record(value);
-            }
-            else
-            {
-                var metricName = TcpMetricName(family, name);
-                var gauge = SocketMeter.CreateGauge<long>(metricName, metricName);
-                metrics[name] = gauge;
-                gauge.Record(value);
-            }
+            var tagList = new TagList { { "metric", name } };
+            measures.Add(new Measurement<long>(value, tagList));
         }
     }
 
-    private static async Task TrackTcpIpv6Statistics(TimeSpan collectionInterval,
-        CancellationToken cancellationToken = default)
+    private static ObservableGauge<long> TrackTcpIpv6Statistics()
     {
-        var metrics = new Dictionary<string, Gauge<long>>();
-        while (!cancellationToken.IsCancellationRequested)
-        {
-            // should immediately crash the process if there's platform compat issues
-            var stats = IPGlobalProperties.GetIPGlobalProperties().GetTcpIPv6Statistics();
-            RecordTcpStats(AddressFamily.InterNetwork, metrics, stats);
-            await Task.Delay(collectionInterval, cancellationToken);
-        }
+        return SocketMeter.CreateObservableGauge("tcp.stats.ipv6",
+            () =>
+            {
+                var stats = IPGlobalProperties.GetIPGlobalProperties().GetTcpIPv6Statistics();
+                return RecordTcpStats(AddressFamily.InterNetworkV6, stats);
+            }, "observed", "TCP IPv6 statistics");
     }
 
     public static ObservableGauge<int> TrackActiveTcpConnections(string metricName, string description,
