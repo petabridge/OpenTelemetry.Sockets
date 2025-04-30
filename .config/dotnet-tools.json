@@ -2,26 +2,12 @@
   "version": 1,
   "isRoot": true,
   "tools": {
-    "incrementalist.cmd": {
-      "version": "1.0.0",
-      "commands": [
-        "incrementalist"
-      ],
-      "rollForward": false
-    },
-    "docfx": {
-      "version": "2.78.3",
-      "commands": [
-        "docfx"
-      ],
-      "rollForward": false
-    },
     "sign": {
       "version": "0.9.1-beta.25181.2",
       "commands": [
         "sign"
       ],
-      "rollForward": false
+      "rollForward": true
     }
   }
 }
