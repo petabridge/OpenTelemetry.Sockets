@@ -111,9 +111,10 @@ internal static class TcpInstrumentationMeter
         var metrics = new Dictionary<string, Gauge<long>>();
         while (!cancellationToken.IsCancellationRequested)
         {
-            await Task.Delay(collectionInterval, cancellationToken);
+            // should immediately crash the process if there's platform compat issues
             var stats = IPGlobalProperties.GetIPGlobalProperties().GetTcpIPv6Statistics();
             RecordTcpStats(AddressFamily.InterNetwork, metrics, stats);
+            await Task.Delay(collectionInterval, cancellationToken);
         }
     }
 
