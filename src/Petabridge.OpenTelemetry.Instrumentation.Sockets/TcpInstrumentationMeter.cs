@@ -7,6 +7,7 @@ using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
+using static OpenTelemetry.Instrumentation.Sockets.SocketInstrumentationExtensions;
 
 namespace OpenTelemetry.Instrumentation.Sockets;
 
@@ -15,8 +16,6 @@ namespace OpenTelemetry.Instrumentation.Sockets;
 /// </summary>
 internal static class TcpInstrumentationMeter
 {
-    public const string MeterName = "OpenTelemetry.TcpInstrumentation";
-    public static readonly Meter Meter = new Meter(MeterName);
     public const string ActiveTcpConnectionsName = "tcp.connections.active";
     public const string TcpConnectionsUnit = "tcp_connections";
     public const string ActiveTcpListenersName = "tcp.listeners.active";
@@ -95,7 +94,7 @@ internal static class TcpInstrumentationMeter
             else
             {
                 var metricName = TcpMetricName(family, name);
-                var gauge = Meter.CreateGauge<long>(metricName, metricName);
+                var gauge = SocketMeter.CreateGauge<long>(metricName, metricName);
                 metrics[name] = gauge;
                 gauge.Record(value);
             }
@@ -115,7 +114,7 @@ internal static class TcpInstrumentationMeter
 
     public static ObservableGauge<int> TrackActiveTcpConnections(string metricName, string description,
         string units = TcpConnectionsUnit, Predicate<TcpConnectionInformation>? keepData = null)
-        => Meter.CreateObservableGauge<int>(metricName,
+        => SocketMeter.CreateObservableGauge<int>(metricName,
             () =>
             {
                 keepData ??= DefaultTcpConnectionKeepFn;
@@ -151,7 +150,7 @@ internal static class TcpInstrumentationMeter
 
     public static ObservableGauge<int> TrackActiveTcpListeners(string metricName, string description,
         string units = TcpListenersUnit, Predicate<IPEndPoint>? keepData = null)
-        => Meter.CreateObservableGauge<int>(metricName,
+        => SocketMeter.CreateObservableGauge<int>(metricName,
             () =>
             {
                 keepData ??= DefaultListeningEndpointKeepFn;

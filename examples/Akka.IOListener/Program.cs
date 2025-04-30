@@ -60,7 +60,7 @@ hostBuilder.ConfigureServices((context, services) =>
         .WithMetrics(c =>
         {
             c.AddRuntimeInstrumentation()
-                .AddTcpConnectionInstrumentation()
+                .AddSocketInstrumentation()
                 .AddConsoleExporter();
         });
 });
