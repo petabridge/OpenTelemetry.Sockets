@@ -50,7 +50,7 @@ jobs:
       shell: pwsh
       run: |
         dotnet sign code azure-key-vault `
-          "$env:GITHUB_WORKSPACE/output/**/*.nupkg" `
+          "**/*.nupkg" `
           --base-directory "$env:GITHUB_WORKSPACE/output" `
           --publisher-name "Petabridge" `
           --description "Petabridge OpenTelemetry Sockets Instrumentation" `
