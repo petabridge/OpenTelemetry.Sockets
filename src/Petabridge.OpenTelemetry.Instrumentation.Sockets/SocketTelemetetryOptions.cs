@@ -14,11 +14,6 @@ namespace OpenTelemetry.Instrumentation.Sockets;
 /// </summary>
 public interface ISocketTelemetryConfigurator
 {
-    /// <summary>
-    ///     How often to collect telemetry data from the socket instrumentation on instruments
-    ///     that support it.
-    /// </summary>
-    public TimeSpan CollectionInterval { get; set; }
 }
 
 /// <summary>
