@@ -88,7 +88,7 @@ jobs:
       run: ls -R ${{ github.workspace }}/artifacts
 
     - name: Push Packages to NuGet
-      run: dotnet nuget push "${{ github.workspace }}/artifacts/output/*.nupkg" -k ${{ secrets.OTEL_NUGET_KEY }} -s https://api.nuget.org/v3/index.json --skip-duplicate
+      run: dotnet nuget push "${{ github.workspace }}/artifacts/*.nupkg" -k ${{ secrets.OTEL_NUGET_KEY }} -s https://api.nuget.org/v3/index.json --skip-duplicate
 
     # Need checkout again to potentially access repo files not in artifact, though RELEASE_NOTES.md is included above
     # If RELEASE_NOTES.md is the ONLY thing needed, this checkout might be removable.
@@ -103,7 +103,7 @@ jobs:
       with:
         tag_name: ${{ github.ref }}
         release_name: 'Petabridge.OpenTelemetry.Sockets ${{ github.ref_name }}'
-        body_path: ${{ github.workspace }}/artifacts/output/RELEASE_NOTES.md # Use note from artifact
+        body_path: ${{ github.workspace }}/artifacts/RELEASE_NOTES.md # Use note from artifact
         draft: false
         prerelease: false
 
@@ -112,4 +112,4 @@ jobs:
       with:
         repo-token: ${{ github.token }}
         release-tag: ${{ github.ref_name }}
-        files: '${{ github.workspace }}/artifacts/output/*.nupkg' # Adjusted path
+        files: '${{ github.workspace }}/artifacts/*.nupkg' # Adjusted path
