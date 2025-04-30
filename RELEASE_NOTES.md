@@ -1,3 +1,4 @@
-#### 1.0.0 April 10th 2025 ####
+#### 1.0.0-beta1 April 30th 2025 ####
 
-Example release notes
+- Initial release of Petabridge.OpenTelemetry.Instrumentation.Sockets
+- Has full TCP support on both IPV4 / IPV6 on both Windows and POSIX systems
