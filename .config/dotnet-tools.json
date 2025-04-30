@@ -15,6 +15,13 @@
         "docfx"
       ],
       "rollForward": false
+    },
+    "sign": {
+      "version": "0.9.1-beta.25181.2",
+      "commands": [
+        "sign"
+      ],
+      "rollForward": false
     }
   }
 }
