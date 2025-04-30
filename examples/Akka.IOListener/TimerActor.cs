@@ -1,6 +1,6 @@
 using Akka.Hosting;
 
-namespace Akka.Console;
+namespace Akka.IOListener;
 
 public class TimerActor : ReceiveActor, IWithTimers
 {
@@ -9,10 +9,7 @@ public class TimerActor : ReceiveActor, IWithTimers
     public TimerActor(IRequiredActor<HelloActor> helloActor)
     {
         _helloActor = helloActor.ActorRef;
-        Receive<string>(message =>
-        {
-            _helloActor.Tell(message);
-        });
+        Receive<string>(message => { _helloActor.Tell(message); });
     }
 
     protected override void PreStart()
