@@ -2,7 +2,6 @@
   <PropertyGroup>
     <Copyright>Copyright © 2015-$([System.DateTime]::Now.Year) Petabridge</Copyright>
     <Authors>Petabridge</Authors>
-    <Tags>akka, akka.streams, kafka, akkadotnet, akka streams, akka.streams.kafka</Tags>
     <NoWarn>$(NoWarn);CS1591</NoWarn>
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
@@ -16,16 +15,13 @@
     <NetLibVersion>net8.0</NetLibVersion>
     <NetCoreTestVersion>net9.0</NetCoreTestVersion>
   </PropertyGroup>
-  <ItemGroup>
-    <Using Include="Akka.Event" />
-  </ItemGroup>
   <!-- GitHub SourceLink -->
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All" />
   </ItemGroup>
   <!-- NuGet package properties -->
     <ItemGroup>
-    <None Include="$(MSBuildThisFileDirectory)\akkalogo.png" Pack="true" PackagePath="\" />
+    <None Include="$(MSBuildThisFileDirectory)\petabridge_logo_square.png" Pack="true" PackagePath="\" />
     <None Include="$(MSBuildThisFileDirectory)\README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
   <!-- NuGet .nupkg options -->
@@ -33,10 +29,10 @@
     <PackageReleaseNotes>1.5.25 June 17 2024
 
 * [Updated Akka.NET to 1.5.25](https://github.com/akkadotnet/akka.net/releases/tag/1.5.25)</PackageReleaseNotes>
-    <PackageTags>akka;actors;actor model;Akka;concurrency;test</PackageTags>
-    <PackageProjectUrl>https://github.com/akkadotnet/Akka.MultiNodeTestRunner</PackageProjectUrl>
+    <PackageTags>otel, opentelemetry, tcp, sockets, tcp metrics, socket metrics</PackageTags>
+    <PackageProjectUrl>https://github.com/petabridge/OpenTelemetry.TcpSockets</PackageProjectUrl>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-    <PackageIcon>akkalogo.png</PackageIcon>
+    <PackageIcon>petabridge_logo_square.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <!-- Optional: Embed source files that are not tracked by the source control manager in the PDB -->

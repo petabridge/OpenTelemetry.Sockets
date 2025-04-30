@@ -6,5 +6,10 @@
     <File Path="NuGet.Config" />
     <File Path="README.md" />
   </Folder>
-  <Project Path="src/Akka.Console/Akka.Console.csproj" />
+  <Folder Name="/examples/">
+    <Project Path="examples\Akka.IOListener\Akka.IOListener.csproj" Type="Classic C#" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src\Petabridge.OpenTelemetry.Instrumentation.Sockets\Petabridge.OpenTelemetry.Instrumentation.Sockets.csproj" Type="Classic C#" />
+  </Folder>
 </Solution>
