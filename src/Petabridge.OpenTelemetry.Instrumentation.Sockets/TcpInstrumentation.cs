@@ -62,12 +62,12 @@ public static class TcpInstrumentation
     {
         if (specificFamily is null)
         {
-            _ = TrackTcpIpStatistics(IpFamily.IPv4);
-            _ = TrackTcpIpStatistics(IpFamily.IPv6);
+            _ = TrackTcpIpStatistics(IpFamily.IPv4, configurator.CollectionInterval);
+            _ = TrackTcpIpStatistics(IpFamily.IPv6, configurator.CollectionInterval);
         }
         else
         {
-            _ = TrackTcpIpStatistics(specificFamily.Value);
+            _ = TrackTcpIpStatistics(specificFamily.Value, configurator.CollectionInterval);
         }
         
         return configurator;

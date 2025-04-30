@@ -45,22 +45,27 @@ internal static class TcpInstrumentationMeter
         };
     }
 
-    public static Task TrackTcpIpStatistics(IpFamily family, CancellationToken cancellationToken = default)
+    public static Task TrackTcpIpStatistics(IpFamily family, TimeSpan collectionInterval, CancellationToken cancellationToken = default)
     {
+        // check if collectionInterval is zero or negative
+        if (collectionInterval <= TimeSpan.Zero)
+            throw new ArgumentOutOfRangeException(nameof(collectionInterval), collectionInterval,
+                "Collection interval must be greater than zero.");
+        
         return family switch
         {
-            IpFamily.IPv6 => TrackTcpIpv6Statistics(cancellationToken),
-            IpFamily.IPv4 => TrackTcpIpv4Statistics(cancellationToken),
+            IpFamily.IPv6 => TrackTcpIpv6Statistics(collectionInterval, cancellationToken),
+            IpFamily.IPv4 => TrackTcpIpv4Statistics(collectionInterval, cancellationToken),
             _ => throw new ArgumentOutOfRangeException(nameof(family), family, $"Invalid IP family: {family}")
         };
     }
 
-    private static async Task TrackTcpIpv4Statistics(CancellationToken cancellationToken = default)
+    private static async Task TrackTcpIpv4Statistics(TimeSpan collectionInterval, CancellationToken cancellationToken = default)
     {
         var metrics = new Dictionary<string, Gauge<long>>();
         while (!cancellationToken.IsCancellationRequested)
         {
-            await Task.Delay(TimeSpan.FromSeconds(10), cancellationToken);
+            await Task.Delay(collectionInterval, cancellationToken);
             var stats = IPGlobalProperties.GetIPGlobalProperties().GetTcpIPv4Statistics();
             RecordTcpStats(AddressFamily.InterNetwork, metrics, stats);
         }
@@ -101,12 +106,12 @@ internal static class TcpInstrumentationMeter
         }
     }
 
-    private static async Task TrackTcpIpv6Statistics(CancellationToken cancellationToken = default)
+    private static async Task TrackTcpIpv6Statistics(TimeSpan collectionInterval, CancellationToken cancellationToken = default)
     {
         var metrics = new Dictionary<string, Gauge<long>>();
         while (!cancellationToken.IsCancellationRequested)
         {
-            await Task.Delay(TimeSpan.FromSeconds(10), cancellationToken);
+            await Task.Delay(collectionInterval, cancellationToken);
             var stats = IPGlobalProperties.GetIPGlobalProperties().GetTcpIPv6Statistics();
             RecordTcpStats(AddressFamily.InterNetwork, metrics, stats);
         }
