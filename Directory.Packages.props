@@ -4,7 +4,7 @@
     </PropertyGroup>
     <ItemGroup>
         <PackageVersion Include="Akka.Hosting" Version="1.5.38"/>
-        <PackageVersion Include="Microsoft.Extensions.Hosting" Version="8.0.0"/>
+        <PackageVersion Include="Microsoft.Extensions.Hosting" Version="9.0.4"/>
     </ItemGroup>
     <!-- dependencies -->
     <ItemGroup>
