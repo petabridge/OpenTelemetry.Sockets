@@ -89,9 +89,6 @@ services.AddOpenTelemetry()
             .AddConsoleExporter() // Example exporter
             .AddSocketInstrumentation(configurator => // <-- Configure options
             {
-                // Set how often metrics are collected (default is 15 seconds)
-                configurator.CollectionInterval = TimeSpan.FromSeconds(10);
-
                 // Explicitly enable TCP connection state metrics (enabled by default)
                 configurator.AddTcpConnectionInstrumentation();
 
