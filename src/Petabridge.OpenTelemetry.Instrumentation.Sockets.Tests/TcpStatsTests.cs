@@ -5,6 +5,7 @@
 // -----------------------------------------------------------------------
 
 using System.Net.NetworkInformation;
+using System.Runtime.InteropServices;
 using OpenTelemetry.Instrumentation.Sockets;
 using static OpenTelemetry.Instrumentation.Sockets.TcpInstrumentationMeter;
 
@@ -27,15 +28,23 @@ public class TcpStatsTests
     [InlineData(IpFamily.IPv4)]
     public void TcpStats_should_return_correct_values(IpFamily ipFamily)
     {
-        // arrange
-        var tcpStats = RecordTcpStats(GetStats(ipFamily)).ToList();
+        /*
+         * IPGlobalProperties.GetIPGlobalProperties().GetTcpIPv4Statistics() and the IPv6 equivalent
+         * only work on Windows.
+         */
         
-        // assert
-        Assert.NotNull(tcpStats);
-        Assert.NotEmpty(tcpStats);
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            // arrange
+            var tcpStats = RecordTcpStats(GetStats(ipFamily)).ToList();
         
-        // at least one stat should have a non-zero value
-        var hasNonZeroValue = tcpStats.Any(stat => stat.Value > 0);
-        Assert.True(hasNonZeroValue, "At least one TCP stat should have a non-zero value.");
+            // assert
+            Assert.NotNull(tcpStats);
+            Assert.NotEmpty(tcpStats);
+        
+            // at least one stat should have a non-zero value
+            var hasNonZeroValue = tcpStats.Any(stat => stat.Value > 0);
+            Assert.True(hasNonZeroValue, "At least one TCP stat should have a non-zero value.");
+        }
     }
 }
