@@ -22,8 +22,8 @@ health of network-intensive applications.
 
 **Supported Platforms:**
 
-* Windows (via `iphlpapi.dll`)
-* Linux (via `/proc/net/tcp` and `/proc/net/tcp6`)
+* Windows (all stats)
+* Linux (active TCP connections and listeners only - see limited by .NET runtime platform support)
 
 ## :warning: Important Caveat: System-Wide Data Collection
 
