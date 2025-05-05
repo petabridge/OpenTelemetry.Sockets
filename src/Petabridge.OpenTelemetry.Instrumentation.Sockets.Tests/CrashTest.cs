@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------
-// <copyright file="CrashTest.cs" company="Petabridge, LLC">
+// <copyright file="CrashTests.cs" company="Petabridge, LLC">
 //      Copyright (C) 2025 - 2025 Petabridge, LLC <https://petabridge.com>
 // </copyright>
 // -----------------------------------------------------------------------
@@ -14,7 +14,7 @@ using OpenTelemetry.Resources;
 
 namespace Petabridge.OpenTelemetry.Instrumentation.Sockets.Tests;
 
-public class CrashTest
+public class CrashTests
 {
     [Fact]
     public async Task ShouldLaunchSocketMetricsWithoutCrash()

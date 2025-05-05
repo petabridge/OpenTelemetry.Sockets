@@ -12,5 +12,9 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
     </ItemGroup>
+    
+    <ItemGroup>
+        <InternalsVisibleTo Include="Petabridge.OpenTelemetry.Instrumentation.Sockets.Tests" />
+    </ItemGroup>
 
 </Project>

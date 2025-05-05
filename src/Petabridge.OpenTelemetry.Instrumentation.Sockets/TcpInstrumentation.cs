@@ -6,6 +6,7 @@
 
 using System.Net;
 using System.Net.NetworkInformation;
+using System.Runtime.InteropServices;
 using static OpenTelemetry.Instrumentation.Sockets.TcpInstrumentationMeter;
 
 namespace OpenTelemetry.Instrumentation.Sockets;
@@ -67,14 +68,18 @@ public static class TcpInstrumentation
     public static ISocketTelemetryConfigurator AddTcpStatisticsInstrumentation(
         this ISocketTelemetryConfigurator configurator, IpFamily? specificFamily = null)
     {
-        if (specificFamily is null)
+        // can't run TCP stats on non-Windows platforms.
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
-            _ = TrackTcpIpStatistics(IpFamily.IPv4);
-            _ = TrackTcpIpStatistics(IpFamily.IPv6);
-        }
-        else
-        {
-            _ = TrackTcpIpStatistics(specificFamily.Value);
+            if (specificFamily is null)
+            {
+                _ = TrackTcpIpStatistics(IpFamily.IPv4);
+                _ = TrackTcpIpStatistics(IpFamily.IPv6);
+            }
+            else
+            {
+                _ = TrackTcpIpStatistics(specificFamily.Value);
+            }
         }
 
         return configurator;

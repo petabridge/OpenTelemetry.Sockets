@@ -58,12 +58,11 @@ internal static class TcpInstrumentationMeter
             () =>
             {
                 var stats = IPGlobalProperties.GetIPGlobalProperties().GetTcpIPv4Statistics();
-                return RecordTcpStats(AddressFamily.InterNetwork, stats);
+                return RecordTcpStats(stats);
             }, "observed", "TCP IPv4 statistics");
     }
 
-    private static IEnumerable<Measurement<long>> RecordTcpStats(AddressFamily family, 
-        TcpStatistics statistics)
+    internal static IEnumerable<Measurement<long>> RecordTcpStats(TcpStatistics statistics)
     {
         var measures = new List<Measurement<long>>();
         SetMetric("connections_accepted", statistics.ConnectionsAccepted);
@@ -93,7 +92,7 @@ internal static class TcpInstrumentationMeter
             () =>
             {
                 var stats = IPGlobalProperties.GetIPGlobalProperties().GetTcpIPv6Statistics();
-                return RecordTcpStats(AddressFamily.InterNetworkV6, stats);
+                return RecordTcpStats(stats);
             }, "observed", "TCP IPv6 statistics");
     }
 
