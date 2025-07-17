@@ -7,22 +7,22 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Akka.Hosting.TestKit"/>
-        <PackageReference Include="coverlet.collector"/>
-        <PackageReference Include="Microsoft.NET.Test.Sdk"/>
-        <PackageReference Include="xunit"/>
-        <PackageReference Include="xunit.runner.visualstudio"/>
-        <PackageReference Include="Microsoft.Extensions.Hosting"/>
-        <PackageReference Include="OpenTelemetry.Exporter.Console"/>
-        <PackageReference Include="OpenTelemetry.Extensions.Hosting"/>
+        <PackageReference Include="Akka.Hosting.TestKit" />
+        <PackageReference Include="coverlet.collector" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" />
+        <PackageReference Include="xunit" />
+        <PackageReference Include="xunit.runner.visualstudio" />
+        <PackageReference Include="Microsoft.Extensions.Hosting" />
+        <PackageReference Include="OpenTelemetry.Exporter.Console" />
+        <PackageReference Include="OpenTelemetry.Extensions.Hosting" />
     </ItemGroup>
 
     <ItemGroup>
-        <Using Include="Xunit"/>
+        <Using Include="Xunit" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Petabridge.OpenTelemetry.Instrumentation.Sockets\Petabridge.OpenTelemetry.Instrumentation.Sockets.csproj"/>
+        <ProjectReference Include="..\Petabridge.OpenTelemetry.Instrumentation.Sockets\Petabridge.OpenTelemetry.Instrumentation.Sockets.csproj" />
     </ItemGroup>
 
 </Project>
