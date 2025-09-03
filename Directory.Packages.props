@@ -3,7 +3,7 @@
         <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     </PropertyGroup>
     <ItemGroup>
-        <PackageVersion Include="Akka.Hosting" Version="1.5.45" />
+        <PackageVersion Include="Akka.Hosting" Version="1.5.48.1" />
         <PackageVersion Include="Microsoft.Extensions.Hosting" Version="9.0.7" />
     </ItemGroup>
     <!-- dependencies -->
