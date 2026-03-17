@@ -68,7 +68,7 @@ jobs:
       run: Copy-Item -Path $env:GITHUB_WORKSPACE/RELEASE_NOTES.md -Destination $env:GITHUB_WORKSPACE/output/
 
     - name: Upload Artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: signed-packages
         path: ./output # Upload entire output directory
